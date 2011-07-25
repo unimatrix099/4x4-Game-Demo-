@@ -1,0 +1,15 @@
+Size 14 14
+LastPosition 6 4
+GateA 12 8
+GateB 0 0
+Line 10 7 10 8
+Line 1 7 10 7
+Line 1 2 1 7
+Line 0 2 1 2
+Line 2 0 2 1
+Line 2 1 11 1
+Line 11 1 11 6
+Line 11 6 12 6
+Line 2 6 4 6
+Line 5 4 7 4
+Line 8 2 10 2
