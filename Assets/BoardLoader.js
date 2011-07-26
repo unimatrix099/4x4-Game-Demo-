@@ -18,6 +18,7 @@ var lastPositionPrefab : GameObject;
 
 static var lastPositionX = 0;
 static var lastPositionY = 0;
+static var lastPositionMarker : GameObject;
 
 var playerATurn = 1;
 var playerBTurn = 0;
@@ -80,6 +81,9 @@ function loadBoard(filepathIncludingFileName : String) {
 	sr.Close();
 }
 
+
+
+
 function initBoard(x:int, y:int){
 var i;
 sizeX = x;
@@ -105,13 +109,17 @@ for(y=0;y<sizeY;y++){
 }
 
 function setLastPosition(x:int,y:int){
+	if (lastPositionMarker != null){
+		Destroy(lastPositionMarker);
+	}
+	
 	lastPositionX = x;
 	lastPositionY = y;
 
-	var instance : GameObject = Instantiate(lastPositionPrefab, Vector3(x * lineSize, y * lineSize, 0), Quaternion.identity);
-	instance.renderer.material.SetColor("_Color",Color.red);
-    instance.renderer.material.color.a = 0.5f;
-	instance.transform.localScale = Vector3(lineSize/3.0f,lineSize/3.0f,1);
+	lastPositionMarker= Instantiate(lastPositionPrefab, Vector3(x * lineSize, y * lineSize, 0), Quaternion.identity);
+	lastPositionMarker.renderer.material.SetColor("_Color",Color.red);
+    lastPositionMarker.renderer.material.color.a = 0.5f;
+	lastPositionMarker.transform.localScale = Vector3(lineSize/3.0f,lineSize/3.0f,1);
 }
 
 function addDot(x:int,y:int){

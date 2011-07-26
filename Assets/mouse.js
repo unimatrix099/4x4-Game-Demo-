@@ -1,6 +1,7 @@
 
 var pointPrefab : GameObject;
 var linePrefab : GameObject;
+var lastPositionPrefab : GameObject;
 
 function OnMouseDown() {
 
@@ -42,11 +43,12 @@ function OnMouseDown() {
 			newLastY -= 1;
 		}
 		
-		addLine(BoardLoader.lastPositionX,BoardLoader.lastPositionY,newLastX,newLastY);
+		addLineUnit(BoardLoader.lastPositionX,BoardLoader.lastPositionY,newLastX,newLastY);
 				
 		BoardLoader.lastPositionX = newLastX;
 		BoardLoader.lastPositionY = newLastY;
 		
+		setLastPosition(newLastX,newLastY);
 		
 	  }
 	  else{
@@ -72,75 +74,6 @@ function Update () {
 }
 
 
-function addLine(x1:int,y1:int,x2:int,y2:int){
-
-
-if (x1 > x2)
-{
- var tx = x2;
- x2 = x1;
- x1 = tx;
-}
-
-if (y1 > y2)
-{
- var ty = y2;
- y2 = y1;
- y1 = ty;
-}
-
-var deltaX = 0;
-var deltaY = 0;
-
-if (x2 - x1 > 0){
-	deltaX = 1;
-}
-
-if (x2 - x1 < 0){
-	deltaX = -1;
-}
-
-
-if (y2 - y1 > 0){
-	deltaY = 1;
-}
-
-if (y2 - y1 < 0){
-	deltaY = -1;
-}
-
-
-Debug.Log("Delta  "+deltaX+" "+deltaY+" ");
-
-var i = x1;
-var j = y1;
-
-var done = 0;
-
-while( (x2 - i + y2 - j > 0))
-{
-	addPoint(i,j);
-	
-	if ( (i+deltaX) <=x2 && (j+deltaY) <= y2){
-	
-		addLineUnit(i,j,i+deltaX,j+deltaY);
-	
-	}
-		
-	i+=deltaX;
-	j+=deltaY;
-		
-}
-
-i = x1;
-j = y1;
-
-}
-
-function addPoint(x:int,y:int){
-	var instance : GameObject = Instantiate(pointPrefab, Vector3(x * BoardLoader.lineSize + 0.5f, y * BoardLoader.lineSize + 0.5f, 0), Quaternion.identity);
-}
-
 function addLineUnit(x1:int,y1:int,x2:int,y2:int){
 	var instance : GameObject = Instantiate(linePrefab, Vector3((x1+(x2-x1)/2.0f) * BoardLoader.lineSize, (y1+(y2-y1)/2.0f) *BoardLoader.lineSize, 0), Quaternion.identity);
  
@@ -153,8 +86,42 @@ function addLineUnit(x1:int,y1:int,x2:int,y2:int){
 	}
 	else{
 		instance.transform.localScale = Vector3(Mathf.Sqrt(2)*(BoardLoader.lineSize+1),1,1);
-		instance.transform.rotation = Quaternion.FromToRotation (Vector3.forward, Vector3(x2-x1,y1-y2,0));
+		
+		var dir;
+		
+		if ( (x2-x1)>0){
+			if ( (y2-y1)  > 0){
+				dir = Vector3(1,1,0);
+			}
+			else{
+				dir = Vector3(1,-1,0);
+			}
+		}
+		else{
+			if ( (y2-y1)  > 0){
+				dir = Vector3(-1,1,0);
+			}
+			else{
+				dir = Vector3(-1,-1,0);
+			}
+		}
+
+		instance.transform.rotation = Quaternion.FromToRotation (Vector3(1,0,0), dir.normalized);
 	}
 	
+}
+
+function setLastPosition(x:int,y:int){
+	if (BoardLoader.lastPositionMarker != null){
+		Destroy(BoardLoader.lastPositionMarker);
+	}
+	
+	lastPositionX = x;
+	lastPositionY = y;
+
+	BoardLoader.lastPositionMarker= Instantiate(lastPositionPrefab, Vector3(x * BoardLoader.lineSize, y * BoardLoader.lineSize, 0), Quaternion.identity);
+	BoardLoader.lastPositionMarker.renderer.material.SetColor("_Color",Color.red);
+    BoardLoader.lastPositionMarker.renderer.material.color.a = 0.5f;
+	BoardLoader.lastPositionMarker.transform.localScale = Vector3(BoardLoader.lineSize/3.0f,BoardLoader.lineSize/3.0f,1);
 }
 
