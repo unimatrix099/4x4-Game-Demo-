@@ -1,11 +1,11 @@
 import System.IO;
 
 var filePath = "/Boards/board01.txt";
-var board;
+var gameboard;
 var lines;
 var sizeX = 0;
 var sizeY = 0;
-var lineSize = 2;
+static var lineSize = 10;
 var cameraZoom = 3;
 
 var dotPrefab : GameObject;
@@ -16,8 +16,8 @@ var gateBPrefab : GameObject;
 var mainCamera : GameObject;
 var lastPositionPrefab : GameObject;
 
-var lastPositionX = 0;
-var lastPositionY = 0;
+static var lastPositionX = 0;
+static var lastPositionY = 0;
 
 var playerATurn = 1;
 var playerBTurn = 0;
@@ -87,12 +87,12 @@ sizeY = y;
 
 mainCamera.transform.position = Vector3(x/2.0f * cameraZoom,y/2.0f * cameraZoom, -(x+y)*cameraZoom);
 
-board = new Array(sizeY);
+gameboard = new Array(sizeY);
 
 
 
 for(i=0;i<sizeY;i++){
-	board[i]=new Array(sizeX);
+	gameboard[i]=new Array(sizeX);
 }
 
 
@@ -105,6 +105,9 @@ for(y=0;y<sizeY;y++){
 }
 
 function setLastPosition(x:int,y:int){
+	lastPositionX = x;
+	lastPositionY = y;
+
 	var instance : GameObject = Instantiate(lastPositionPrefab, Vector3(x * lineSize, y * lineSize, 0), Quaternion.identity);
 	instance.renderer.material.SetColor("_Color",Color.red);
     instance.renderer.material.color.a = 0.5f;
@@ -113,8 +116,10 @@ function setLastPosition(x:int,y:int){
 
 function addDot(x:int,y:int){
 	var instance : GameObject = Instantiate(dotPrefab, Vector3(x * lineSize, y * lineSize, 0), Quaternion.identity);
+	instance.transform.localScale = Vector3(2,2,2);
 	instance.renderer.material.SetColor("_Color",Color.gray);
     instance.renderer.material.color.a = 0.5f;
+	
 }
 
 function addGateA(x:int,y:int){
@@ -160,6 +165,7 @@ if (y1 == y2){
 
 function addPoint(x:int,y:int){
 	var instance : GameObject = Instantiate(pointPrefab, Vector3(x * lineSize + 0.5f, y * lineSize + 0.5f, 0), Quaternion.identity);
+	gameboard[x][y] = 1;
 }
 
 function addLineUnit(x1:int,y1:int,x2:int,y2:int){
@@ -182,32 +188,20 @@ function addLineUnit(x1:int,y1:int,x2:int,y2:int){
 var wasClicked : boolean;
 
 function OnMouseDown() {
-    wasClicked = true;
-    Activate();
+  Debug.Log("mouseDown");
 }
 
 function OnMouseUp() {
-    wasClicked = false;
-    Deactivate();
+ Debug.Log("mouseUP");
 }
 
 function OnMouseEnter() {
-    if (wasClicked) {
-        Activate();
-    }
+
 }
 
 function OnMouseExit() {
-    Deactivate();
 }
 
-function Activate() {
-    renderer.material.color = Color.red;
-}
-
-function Deactivate() {
-    renderer.material.color = Color.white;
-}
 
 function Update () {
 
